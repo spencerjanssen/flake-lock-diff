@@ -1,0 +1,18 @@
+{
+    "files.insertFinalNewline": true,
+    "[haskell]": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true
+    },
+    "[nix]": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[cabal]": {
+        "editor.formatOnSave": true
+    },
+    "haskell.formattingProvider": "fourmolu"
+}

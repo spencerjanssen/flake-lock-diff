@@ -1,0 +1,15 @@
+# One CLI to format the code tree - https://github.com/numtide/treefmt
+
+[formatter.nixpkgs-fmt]
+command = "nixpkgs-fmt"
+includes = ["*.nix"]
+
+[formatter.cabal-fmt]
+command = "cabal-fmt"
+options = ["--inplace"]
+includes = ["*.cabal"]
+
+[formatter.fourmolu]
+command = "fourmolu"
+options = ["-i"]
+includes = ["*.hs"]
