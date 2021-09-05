@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Main where
@@ -10,6 +11,7 @@ import Data.Aeson
 import Data.Aeson.Types
 import Data.Time
 import Data.Time.Clock.POSIX
+import Relude.Extra.Map
 
 newtype NodeRef = NodeRef Text
     deriving stock (Show)
@@ -32,7 +34,7 @@ data InputRef
     deriving (Show)
 
 instance FromJSON InputRef where
-    parseJSON r@(String txt) = ToNode <$> parseJSON r
+    parseJSON r@(String _) = ToNode <$> parseJSON r
     parseJSON (Array _) = pure WeirdArrayThing
     parseJSON x =
         prependFailure
@@ -62,4 +64,14 @@ data Lock = Lock
 
 main :: IO ()
 main = do
-    print =<< eitherDecodeFileStrict @FlakeLock "flake.lock"
+    fl <- either fail pure =<< eitherDecodeFileStrict @FlakeLock "flake.lock"
+    print $ inputModTimes fl
+
+inputModTimes :: FlakeLock -> [(Text, UTCTime)]
+inputModTimes FlakeLock{nodes, root} = do
+    Node{inputs = Just is} <- getNode root
+    (LocalRef inputName, ToNode inputRef) <- toPairs is
+    Node{locked = Just Lock{lastModified = POSIXTimestamp t}} <- getNode inputRef
+    pure (inputName, t)
+  where
+    getNode x = maybeToList $ lookup x nodes
