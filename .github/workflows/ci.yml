@@ -23,3 +23,4 @@ jobs:
     - run: ./result/bin/flake-lock-diff ./flake.lock ./flake.lock
     - run: nix flake check
     - run: nix develop -c treefmt --fail-on-change
+    - run: nix develop -c haskell-language-server typecheck
