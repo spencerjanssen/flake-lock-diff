@@ -1,0 +1,28 @@
+name: Check for updates
+on:
+  workflow_dispatch:
+
+jobs:
+  flake_update:
+    name: Update dependencies
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+      with:
+        ref: main
+        token: ${{ secrets.PAT_FOR_UPDATES }}
+    - uses: cachix/install-nix-action@v13
+      with:
+        install_url: https://nixos-nix-install-tests.cachix.org/serve/i6laym9jw3wg9mw6ncyrk6gjx4l34vvx/install
+        install_options: '--tarball-url-prefix https://nixos-nix-install-tests.cachix.org/serve'
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+    - uses: cachix/cachix-action@v10
+      with:
+        name: flake-lock-diff
+    - run: |
+        git config --global user.email "spencerjanssen@gmail.com"
+        git config --global user.name "Spencer Janssen"
+        nix run github:spencerjanssen/flake-lock-diff#lock-update
+        git diff --quiet origin/update HEAD || ( git switch --force-create update ; git push --force origin update )
