@@ -8,7 +8,9 @@ executable flake-lock-diff
   main-is:          Main.hs
   build-depends:
     , aeson
-    , base    ^>=4.14.3.0
+    , base        ^>=4.14.3.0
+    , bytestring
+    , containers
     , relude
     , text
     , time
