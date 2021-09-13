@@ -34,8 +34,21 @@
           };
       in
       {
-
-        packages.flake-lock-diff = project false;
+        packages = {
+          flake-lock-diff = project false;
+          lock-update = pkgs.writeShellScriptBin "lock-update" ''
+            set -e
+            function lock_updated {
+              git diff --quiet flake.lock &> /dev/null
+            }
+            nix flake update
+            if ! lock_updated
+            then
+              git add flake.lock
+              git show HEAD:flake.lock | ${self.packages.${system}.flake-lock-diff}/bin/flake-lock-diff ./flake.lock | git commit -F -
+            fi
+          '';
+        };
         defaultPackage = self.packages.${system}.flake-lock-diff;
         devShell = project true;
       }
