@@ -22,7 +22,8 @@
             withHoogle = true;
             modifier = drv:
               pkgs.haskell.lib.addBuildTools drv (with pkgs.haskellPackages;
-              [
+              if returnShellEnv
+              then [
                 cabal-fmt
                 cabal-install
                 ghcid
@@ -30,7 +31,9 @@
                 ormolu
                 pkgs.nixpkgs-fmt
                 treefmt.defaultPackage.${system}
-              ]);
+              ]
+              else [ ]
+              );
           };
       in
       {
