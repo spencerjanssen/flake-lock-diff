@@ -8,9 +8,10 @@
       url = "github:edolstra/flake-compat";
       flake = false;
     };
+    nix-filter.url = "github:numtide/nix-filter";
   };
 
-  outputs = { self, nixpkgs, flake-utils, treefmt, ... }:
+  outputs = { self, nixpkgs, flake-utils, treefmt, nix-filter, ... }:
     flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -18,7 +19,13 @@
           pkgs.haskellPackages.developPackage {
             inherit returnShellEnv;
             name = "flake-lock-diff";
-            root = ./.;
+            root = nix-filter.lib.filter {
+              root = ./.;
+              include = [
+                "flake-lock-diff.cabal"
+                (nix-filter.lib.inDirectory "app")
+              ];
+            };
             withHoogle = true;
             modifier = drv:
               pkgs.haskell.lib.addBuildTools drv (with pkgs.haskellPackages;
