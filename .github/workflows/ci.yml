@@ -19,7 +19,7 @@ jobs:
         name: flake-lock-diff
         # If you chose API tokens for write access OR if you have a private cache
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix build
+    - run: nix build --print-build-logs
     - run: ./result/bin/flake-lock-diff ./flake.lock ./flake.lock
     - run: nix flake check
     - run: nix develop -c treefmt --fail-on-change
