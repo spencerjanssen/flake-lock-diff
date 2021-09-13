@@ -11,6 +11,7 @@ jobs:
       with:
         ref: main
         token: ${{ secrets.PAT_FOR_UPDATES }}
+        fetch-depth: 0
     - uses: fregante/setup-git-user@v1
     - uses: cachix/install-nix-action@v13
       with:
