@@ -11,6 +11,7 @@ jobs:
       with:
         ref: main
         token: ${{ secrets.PAT_FOR_UPDATES }}
+    - uses: fregante/setup-git-user@v1
     - uses: cachix/install-nix-action@v13
       with:
         install_url: https://nixos-nix-install-tests.cachix.org/serve/i6laym9jw3wg9mw6ncyrk6gjx4l34vvx/install
@@ -22,7 +23,5 @@ jobs:
       with:
         name: flake-lock-diff
     - run: |
-        git config --global user.email "spencerjanssen@gmail.com"
-        git config --global user.name "Spencer Janssen"
         nix run github:spencerjanssen/flake-lock-diff#lock-update
         git diff --quiet origin/update HEAD || ( git switch --force-create update ; git push --force origin update )
