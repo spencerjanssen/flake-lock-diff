@@ -13,16 +13,31 @@ jobs:
         extra_nix_config: |
           experimental-features = nix-command flakes
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          extra-substituters = file://${{ github.workspace }}/nix-store-cache?priority=10&trusted=true
     - uses: cachix/cachix-action@v10
       with:
         name: flake-lock-diff
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Setup Nix Cache
+      uses: actions/cache@v2
+      with:
+          path: nix-store-cache
+          key: nix-store-cache-${{ github.sha }}
+          restore-keys: |
+            nix-store-cache
     - name: Build flake-lock-diff
-      run: nix build --print-build-logs --verbose
-    - run: ./result/bin/flake-lock-diff ./flake.lock ./flake.lock
+      run: nix build --print-build-logs --verbose -o path-flake-lock-diff
+    - name: Build devShell
+      run: nix build --print-build-logs --verbose -o path-devShell .\#devShell.x86_64-linux
+    - run: ./path-flake-lock-diff/bin/flake-lock-diff ./flake.lock ./flake.lock
     - name: Flake checks
       run: nix flake check
     - name: Check formatting
       run: nix develop -c treefmt --fail-on-change
     - name: Check HLS
       run: nix develop -c haskell-language-server typecheck
+    - name: Rebuild Nix Store Cache
+      run: |
+        sudo rm -rf nix-store-cache || true
+        nix copy ./path-* --to file://$PWD/nix-store-cache?compression=none
+        sudo chown -R $UID nix-store-cache
