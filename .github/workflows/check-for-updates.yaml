@@ -7,7 +7,7 @@ jobs:
     name: Update dependencies
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.5
+    - uses: actions/checkout@v2.4.0
       with:
         ref: main
         token: ${{ secrets.PAT_FOR_UPDATES }}
