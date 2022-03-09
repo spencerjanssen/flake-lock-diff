@@ -6,7 +6,7 @@ jobs:
     name: Build, check formatting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
     - uses: cachix/install-nix-action@v16
       with:
         install_url: https://github.com/numtide/nix-unstable-installer/releases/download/nix-2.4pre20210823_af94b54/install
