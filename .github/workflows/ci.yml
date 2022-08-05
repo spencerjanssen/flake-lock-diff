@@ -19,7 +19,7 @@ jobs:
         name: flake-lock-diff
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - name: Setup Nix Cache
-      uses: actions/cache@v3.0.1
+      uses: actions/cache@v3.0.6
       with:
           path: nix-store-cache
           key: nix-store-cache-${{ github.sha }}
